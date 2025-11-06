@@ -419,7 +419,7 @@ class BitwardenPermissionsManager:
 
 
 def main():
-    """Test permission assignment functionality."""
+    """Main entry point for permission assignment from CSV."""
     try:
         # Initialize permissions manager
         csv_path = "../input/collections_permissions.csv"

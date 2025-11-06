@@ -240,7 +240,7 @@ class BitwardenGroupsManager:
 
 
 def main():
-    """Test group creation functionality."""
+    """Main entry point for group creation from CSV."""
     try:
         # Initialize groups manager
         csv_path = "../input/collections_permissions.csv"
