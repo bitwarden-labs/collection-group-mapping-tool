@@ -2,7 +2,7 @@
 """
 Bitwarden Groups Management Module (INT-249)
 
-Handles group creation from CSV input using the Bitwarden Public API.
+Creates groups using the Bitwarden Public API.
 """
 
 import json
@@ -34,7 +34,7 @@ class BitwardenGroupsManager:
             List of group names from CSV columns
         """
         try:
-            self.logger.logger.info(" Parsing CSV file for group extraction...")
+            self.logger.logger.info(" Parsing CSV headers for group extraction...")
 
             parsed_data = self.parser.parse()
             self.groups_data = parsed_data['groups']
@@ -62,9 +62,6 @@ class BitwardenGroupsManager:
             if not group_name or len(group_name.strip()) == 0:
                 self.logger.logger.error(f" Empty group name found")
                 valid = False
-            elif len(group_name) > 100:
-                self.logger.logger.error(f" Group name too long (>100 chars): '{group_name}'")
-                valid = False
             else:
                 self.logger.logger.debug(f" Valid group name: '{group_name}'")
 
@@ -72,7 +69,7 @@ class BitwardenGroupsManager:
 
     def check_existing_groups(self) -> Dict[str, str]:
         """
-        Check for existing groups to avoid duplicates.
+        Check for existing groups.  Groups with existing names will not be reacreated to avoid duplicates.
 
         Returns:
             Dict mapping group_name -> group_id for existing groups
@@ -92,7 +89,7 @@ class BitwardenGroupsManager:
 
             self.logger.logger.info(f" Found {len(existing_groups)} existing groups:")
             for name, group_id in existing_groups.items():
-                self.logger.logger.info(f"    '{name}' → {group_id}")
+                self.logger.logger.info(f"    Group Name: '{name}' → objectID: {group_id}")
 
             return existing_groups
 
@@ -176,6 +173,7 @@ class BitwardenGroupsManager:
             self.logger.logger.info(f" Groups to skip: {len(existing_groups)}")
 
             # Create each new group
+            skipped_count = len(existing_groups)
             created_count = 0
             failed_count = 0
 
@@ -195,7 +193,8 @@ class BitwardenGroupsManager:
                 "Group Creation",
                 total_attempted,
                 created_count,
-                str(self.csv_path)
+                str(self.csv_path),
+                skipped_count
             )
 
             self.logger.logger.info("=" * 60)
