@@ -59,6 +59,7 @@ class OperationSummary:
     total_attempted: int
     total_succeeded: int
     total_failed: int
+    total_skipped: int
     organization_id: str
     csv_source_file: str
 
@@ -226,7 +227,8 @@ class BulkLogger:
         self._save_log()
 
     def finalize_operation(self, operation_type: str, total_attempted: int,
-                          total_succeeded: int, csv_source_file: str) -> None:
+                          total_succeeded: int, csv_source_file: str,
+                          total_skipped: int = 0) -> None:
         """Finalize the operation and create summary."""
         summary = OperationSummary(
             operation_type=operation_type,
@@ -235,6 +237,7 @@ class BulkLogger:
             total_attempted=total_attempted,
             total_succeeded=total_succeeded,
             total_failed=total_attempted - total_succeeded,
+            total_skipped=total_skipped,
             organization_id=self._get_org_id_from_logs(),
             csv_source_file=csv_source_file
         )
@@ -248,6 +251,7 @@ class BulkLogger:
         self.logger.info("=" * 50)
         self.logger.info(f" Succeeded: {total_succeeded}")
         self.logger.info(f" Failed: {total_attempted - total_succeeded}")
+        self.logger.info(f" Skipped: {total_skipped}")
         self.logger.info(f" Total: {total_attempted}")
         self.logger.info(f" Source: {csv_source_file}")
         self.logger.info(f"️  Log file: {self.log_file}")
