@@ -33,7 +33,9 @@ class BitwardenPermissionsManager:
 
         # Permission mapping from CSV values to API format
         self.permission_mapping = {
+            "ReadPWsHidden": {"readOnly": True, "hidePasswords": True, "manage": False},
             "Read": {"readOnly": True, "hidePasswords": False, "manage": False},
+            "EditPWsHidden": {"readOnly": False, "hidePasswords": True, "manage": False},
             "Edit": {"readOnly": False, "hidePasswords": False, "manage": False},
             "Manage": {"readOnly": False, "hidePasswords": False, "manage": True},
             "None": None  # Skip - don't include in collections array
@@ -214,9 +216,9 @@ class BitwardenPermissionsManager:
                 if association.get("manage"):
                     permission_level = "Manage"
                 elif association.get("readOnly"):
-                    permission_level = "Read"
+                    permission_level = "ReadPWsHidden" if association.get("hidePasswords") else "Read"
                 else:
-                    permission_level = "Edit"
+                    permission_level = "EditPWsHidden" if association.get("hidePasswords") else "Edit"
 
                 self.logger.log_permission_mapped(
                     collection_path or collection_id,
