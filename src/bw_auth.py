@@ -25,6 +25,7 @@ class BitwardenAuth:
     def __init__(self):
         self.bw_cmd = "bw"
         self.session_key = None
+        self.server_url = os.getenv('BW_SERVER_URL', "https://vault.bitwarden.com/")
         self.organization_id = os.getenv('BW_ORGID')
         self.username = os.getenv('BW_USERNAME')
         self.master_password = os.getenv('BW_MASTERPASSWORD')

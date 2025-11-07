@@ -108,8 +108,8 @@ def run_complete_workflow():
         print("   - groups_mapping_*.json (group name -> ID mapping)")
         print("   - permissions_summary_*.json (detailed permission assignments)")
 
-        print("\nView results at:")
-        print("   https://vault.bitwarden.com/#/organizations/1e0e131d-f610-4798-86cc-aed10109190e/collections")
+        print("\nView results:")
+        print("   Check your Bitwarden vault collections page at the Admin Console")
 
         print("\nDetailed logs available in: logs/")
 

@@ -80,7 +80,7 @@ def main():
 
         if created_count > 0:
             print(f"\n Collections created at:")
-            print(f"   https://vault.bitwarden.com/#/organizations/{auth.organization_id}/collections")
+            print(f"   {auth.server_url}#/organizations/{auth.organization_id}/collections")
 
         # Step 7: List created collections for verification
         print(f"\n7. Listing current collections for verification...")
@@ -109,6 +109,7 @@ if __name__ == "__main__":
     success = main()
     if success:
         print(f"\n Collection creation completed successfully!")
-        print(f"   Check vault.bitwarden.com to view collections.")
+        # Note: auth object not available here, using default message
+        print(f"   Check your Bitwarden vault to view collections.")
     else:
         print(f"\n Collection creation failed!")
