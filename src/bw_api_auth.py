@@ -22,9 +22,9 @@ class BitwardenAPIAuth:
     """Handle Bitwarden Public API authentication using OAuth2 client credentials."""
 
     def __init__(self, log_dir: str = "../logs"):
-        self.server_url = "https://vault.bitwarden.com/"
-        self.api_url = "https://api.bitwarden.com"
-        self.identity_url = "https://identity.bitwarden.com/connect/token"
+        self.server_url = os.getenv('BW_SERVER_URL', "https://vault.bitwarden.com/")
+        self.api_url = os.getenv('BW_API_URL', "https://api.bitwarden.com")
+        self.identity_url = os.getenv('BW_IDENTITY_URL', "https://identity.bitwarden.com/connect/token")
         self.groups_url = f"{self.api_url}/public/groups"
         self.collections_url = f"{self.api_url}/public/collections"
 
