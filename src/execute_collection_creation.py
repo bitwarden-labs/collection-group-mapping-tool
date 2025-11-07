@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Execute Collection Creation for INT-248
+Execute Collection Creation
 
 This script will create the collections in Bitwarden based on the CSV input file.
 """
