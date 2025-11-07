@@ -204,8 +204,11 @@ class BitwardenAPIAuth:
             raise
 
 
-def main():
-    """Test authentication functionality."""
+def test_auth():
+    """
+    Test authentication functionality.
+    This method is run when the bw_api_auth.py file is run directly.
+    """
     try:
         auth = BitwardenAPIAuth()
 
@@ -227,4 +230,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    test_auth()
