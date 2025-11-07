@@ -4,6 +4,10 @@ logs/*
 !outputs/.gitkeep
 output/*
 
+# Inputs
+input/*
+!input/collections_permissions.csv
+
 # Tests
 # Not yet ready
 tests
