@@ -79,7 +79,7 @@ class BulkLogger:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_file = self.log_dir / f"{operation_name}_{timestamp}.json"
 
-        # Initialize log data structure
+        # Initialise log data structure
         self.log_data = {
             "operation_metadata": {
                 "operation_name": operation_name,
@@ -124,7 +124,7 @@ class BulkLogger:
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
 
-        self.logger.info(f"Bulk operation logging initialized: {operation_name}")
+        self.logger.info(f"Bulk operation logging initialised: {operation_name}")
         self.logger.info(f"JSON log file: {self.log_file}")
         self.logger.info(f"Text log file: {log_filename}")
 
@@ -226,10 +226,10 @@ class BulkLogger:
         self.logger.error(f" Permission failed: '{group_name}' → '{collection_path}' ({permission_level}) - {error_message}")
         self._save_log()
 
-    def finalize_operation(self, operation_type: str, total_attempted: int,
+    def finalise_operation(self, operation_type: str, total_attempted: int,
                           total_succeeded: int, csv_source_file: str,
                           total_skipped: int = 0) -> None:
-        """Finalize the operation and create summary."""
+        """Finalise the operation and create summary."""
         summary = OperationSummary(
             operation_type=operation_type,
             start_time=self.log_data["operation_metadata"]["start_time"],
@@ -311,8 +311,8 @@ def test_logging():
     logger.log_permission_mapped("Business Unit", "test-id-123", "Users", "group-123", "Read", "org-123")
     logger.log_permission_failed("Business Unit", "Failed Group", "Edit", "org-123", "Test error")
 
-    # Finalize
-    logger.finalize_operation("Test Operation", 6, 4, "test.csv")
+    # Finalise
+    logger.finalise_operation("Test Operation", 6, 4, "test.csv")
 
     print(" Test logging completed")
 

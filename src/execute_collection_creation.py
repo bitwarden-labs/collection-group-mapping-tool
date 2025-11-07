@@ -2,7 +2,7 @@
 """
 Execute Collection Creation for INT-248
 
-This script will actually create the collections in Bitwarden based on the CSV file.
+This script will create the collections in Bitwarden based on the CSV input file.
 """
 
 from csv_parser import CollectionPermissionParser
@@ -16,21 +16,21 @@ def main():
     """Create collections in organisation."""
     csv_file = "../input/collections_permissions.csv"
 
-    print(" INT-248: Org Collection Creation")
+    print(" Org Collection Creation")
     print("=" * 50)
 
     try:
-        # Step 1: Initialize logging
-        print("\n1. Initializing logging...")
+        # Step 1: Initialise logging
+        print("\n1. Initialising logging...")
         logger = BulkLogger(operation_name="collection_creation")
-        print(f"   ✓ Logger initialized")
+        print(f"   ✓ Logger initialised")
 
         # Step 2: Authenticate with Bitwarden
         print("\n2. Authenticating with Bitwarden...")
         auth = BitwardenAuth()
         session_key = auth.authenticate()
         print(f"   ✓ Authentication successful")
-        print(f"   ✓ Organization ID: {auth.organization_id}")
+        print(f"   ✓ Organisation ID: {auth.organization_id}")
 
         # Step 3: Parse CSV for collections
         print("\n3. Parsing CSV file...")
@@ -42,7 +42,7 @@ def main():
         for collection in sorted(unique_collections):
             print(f"     - {collection}")
 
-        # Step 4: Initialize collection manager with logger
+        # Step 4: Initialise collection manager with logger
         print("\n4. Initialising collection manager...")
         collection_manager = BitwardenCollectionManager(auth, logger)
 
@@ -69,9 +69,9 @@ def main():
                 print(f"    Failed: {e}")
                 failed_count += 1
 
-        # Step 6: Finalize logging
+        # Step 6: Finalise logging
         print(f"\n6. Finalising operation logs...")
-        logger.finalize_operation(
+        logger.finalise_operation(
             operation_type="Collection Creation",
             total_attempted=len(sorted_collections),
             total_succeeded=created_count,
@@ -91,7 +91,7 @@ def main():
             ])
             collections_data = json.loads(collections_result)
 
-            print(f"   Current collections in organization:")
+            print(f"   Current collections in organisation:")
             for collection in collections_data:
                 print(f"     - {collection['name']} (ID: {collection['id']})")
 

@@ -189,7 +189,7 @@ class BitwardenGroupsManager:
 
             # Final summary
             total_attempted = len(groups_to_create)
-            self.logger.finalize_operation(
+            self.logger.finalise_operation(
                 "Group Creation",
                 total_attempted,
                 created_count,
@@ -242,7 +242,7 @@ class BitwardenGroupsManager:
 def main():
     """Main entry point for group creation from CSV."""
     try:
-        # Initialize groups manager
+        # Initialise groups manager
         csv_path = "../input/collections_permissions.csv"
         groups_manager = BitwardenGroupsManager(csv_path)
 

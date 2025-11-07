@@ -345,7 +345,7 @@ class BitwardenPermissionsManager:
 
             # Final summary
             total_attempted = len(results)
-            self.logger.finalize_operation(
+            self.logger.finalise_operation(
                 "Permission Assignment",
                 total_attempted,
                 succeeded,
@@ -423,7 +423,7 @@ class BitwardenPermissionsManager:
 def main():
     """Main entry point for permission assignment from CSV."""
     try:
-        # Initialize permissions manager
+        # Initialise permissions manager
         csv_path = "../input/collections_permissions.csv"
         permissions_manager = BitwardenPermissionsManager(csv_path)
 

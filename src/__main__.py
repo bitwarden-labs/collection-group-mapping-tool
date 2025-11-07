@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 """
-Bitwarden Bulk Management Suite - Complete INT-246 Implementation
+Bitwarden Collection Permission Assignment Tool
 
 Single command execution for the complete workflow:
-- INT-247/248: Create Collections from CSV
-- INT-249: Create Groups from CSV
-- INT-250: Assign Group-Collection Permissions
+- Create Collections from CSV input
+- Create Groups from CSV input
+- Assign Group-Collection Permissions based on CSV matrix
 
 Usage:
     python -m src
-    or
-    cd src && python __init__.py
 """
 
 import sys
@@ -54,15 +52,15 @@ def run_complete_workflow():
 
     print("BITWARDEN BULK MANAGEMENT SUITE")
     print("=" * 60)
-    print("INT-246 Epic: Complete Collection & Group Management")
+    print("Collection & Group Management Tool")
     print("=" * 60)
 
     workflow_start = time.time()
 
     try:
-        # Step 1: Create Collections (INT-247/248)
+        # Step 1: Create Collections
         success1 = run_step(
-            "STEP 1: Creating Collections from CSV (INT-247/248)",
+            "STEP 1: Creating Collections from CSV",
             ["python", "execute_collection_creation.py"],
             "Creating nested collections from CSV input using Bitwarden CLI"
         )
@@ -72,9 +70,9 @@ def run_complete_workflow():
 
         time.sleep(2)  # Brief pause between steps
 
-        # Step 2: Create Groups (INT-249)
+        # Step 2: Create Groups
         success2 = run_step(
-            "STEP 2: Creating Groups from CSV (INT-249)",
+            "STEP 2: Creating Groups from CSV input",
             ["python", "bitwarden_groups.py"],
             "Creating groups from CSV headers using Bitwarden Public API"
         )
@@ -84,9 +82,9 @@ def run_complete_workflow():
 
         time.sleep(2)
 
-        # Step 3: Assign Permissions (INT-250)
+        # Step 3: Assign Permissions
         success3 = run_step(
-            "STEP 3: Assigning Group-Collection Permissions (INT-250)",
+            "STEP 3: Assigning Group-Collection Permissions",
             ["python", "bitwarden_permissions.py"],
             "Assigning collection permissions to groups based on CSV matrix"
         )

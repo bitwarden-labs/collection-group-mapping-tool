@@ -37,8 +37,8 @@ def main():
     for collection in sorted(unique_collections):
         print(f"   - {collection}")
 
-    # Step 3: Initialize authentication and collection manager
-    print("\n3. Initializing Bitwarden authentication...")
+    # Step 3: Initialise authentication and collection manager
+    print("\n3. Initialising Bitwarden authentication...")
     try:
         auth = BitwardenAuth()
         collection_manager = BitwardenCollectionManager(auth)

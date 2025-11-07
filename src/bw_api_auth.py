@@ -76,7 +76,7 @@ class BitwardenAPIAuth:
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
 
-        self.logger.info(" Bitwarden API Authentication logging initialized")
+        self.logger.info(" Bitwarden API Authentication logging initialised")
         self.logger.info(f" Log file: {log_filename}")
 
     def _validate_credentials(self):
