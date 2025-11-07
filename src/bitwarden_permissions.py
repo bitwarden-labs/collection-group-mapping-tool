@@ -307,7 +307,7 @@ class BitwardenPermissionsManager:
             Dict mapping group_name -> success_status
         """
         self.logger.logger.info("=" * 70)
-        self.logger.logger.info(" STARTING PERMISSION ASSIGNMENT PROCESS")
+        self.logger.logger.info(" STARTING PERMISSION ASSIGNMENT ")
         self.logger.logger.info("=" * 70)
 
         try:
@@ -353,13 +353,13 @@ class BitwardenPermissionsManager:
             )
 
             self.logger.logger.info("=" * 70)
-            self.logger.logger.info(" PERMISSION ASSIGNMENT PROCESS COMPLETE")
+            self.logger.logger.info(" PERMISSION ASSIGNMENT COMPLETE")
             self.logger.logger.info("=" * 70)
 
             return results
 
         except Exception as e:
-            self.logger.logger.error(f" Permission assignment process failed: {e}")
+            self.logger.logger.error(f" Permission assignment failed: {e}")
             raise
 
     def export_permission_summary(self, output_file: str = None) -> str:
