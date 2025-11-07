@@ -137,21 +137,24 @@ class BitwardenAuth:
             raise
 
 
-def main():
-    """Test authentication functionality."""
+def test_cli_auth():
+    """
+    Test authentication functionality.
+    This method is run when the bw_auth.py file is run directly.
+    """
     try:
         auth = BitwardenAuth()
         session_key = auth.authenticate()
         print(f"✓ Authentication successful")
         print(f"Session key: {session_key[:20]}...")
 
-        # Test a simple command
-        result = auth.run_command(["status"])
-        print(f"✓ Status command successful")
+        # Test via sync command
+        result = auth.run_command(["sync"])
+        print(f"✓ Test sync command successful")
 
     except Exception as e:
         print(f"✗ Authentication failed: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    test_cli_auth()
