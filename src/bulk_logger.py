@@ -291,28 +291,31 @@ class BulkLogger:
             self.logger.error(f"Failed to save log file: {e}")
 
 
-# def main():
-#     """Test the logging functionality."""
-#     logger = BulkLogger(operation_name="test_logging")
+def test_logging():
+    """
+    Test the logging functionality.
+    This method is run when the bulk_logger.py file is run directly.
+    """
+    logger = BulkLogger(operation_name="test_logging")
 
-#     # Test collection logging
-#     logger.log_collection_created("Business Unit", "test-id-123", "org-123")
-#     logger.log_collection_created("Business Unit/A1", "test-id-456", "org-123")
-#     logger.log_collection_failed("Business Unit/Failed", "org-123", "Test error")
+    # Test collection logging
+    logger.log_collection_created("Business Unit", "test-id-123", "org-123")
+    logger.log_collection_created("Business Unit/A1", "test-id-456", "org-123")
+    logger.log_collection_failed("Business Unit/Failed", "org-123", "Test error")
 
-#     # Test group logging
-#     logger.log_group_created("Users", "group-123", "org-123")
-#     logger.log_group_failed("Failed Group", "org-123", "Test error")
+    # Test group logging
+    logger.log_group_created("Users", "group-123", "org-123")
+    logger.log_group_failed("Failed Group", "org-123", "Test error")
 
-#     # Test permission logging
-#     logger.log_permission_mapped("Business Unit", "test-id-123", "Users", "group-123", "Read", "org-123")
-#     logger.log_permission_failed("Business Unit", "Failed Group", "Edit", "org-123", "Test error")
+    # Test permission logging
+    logger.log_permission_mapped("Business Unit", "test-id-123", "Users", "group-123", "Read", "org-123")
+    logger.log_permission_failed("Business Unit", "Failed Group", "Edit", "org-123", "Test error")
 
-#     # Finalize
-#     logger.finalize_operation("Test Operation", 6, 4, "test.csv")
+    # Finalize
+    logger.finalize_operation("Test Operation", 6, 4, "test.csv")
 
-#     print(" Test logging completed")
+    print(" Test logging completed")
 
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    test_logging()
