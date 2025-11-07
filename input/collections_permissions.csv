@@ -1,9 +1,8 @@
 Path,Users,Seniors,Admins
-Business Unit,Read,Read,Manage
-Business Unit/A1,Edit,Edit,Manage
-Business Unit/A1/alpha,Edit,Edit,Manage
-Business Unit/A1/beta,Read,Edit,Manage
-Business Unit/A2,Read,Edit,Manage
-Business Unit/A2/alpha,Read,Manage,Manage
-Business Unit/A2/beta,Read,Edit,Manage
-Business Unit/A3,None,None,Manage
+Business Unit3,Manage,Read,Manage
+Business Unit3/A1,Edit,Edit,Manage
+Business Unit3/A1/alpha,EditPWsHidden,Edit,Manage
+Business Unit3/A1/beta,Read,Edit,Manage
+Business Unit3/A1/gamma,ReadPWsHidden,Edit,Manage
+Business Unit3/A1/delta,None,Edit,Manage
+
