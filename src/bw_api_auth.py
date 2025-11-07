@@ -180,7 +180,7 @@ class BitwardenAPIAuth:
         try:
             self.logger.info(f" API Request: {method.upper()} {url}")
             if data:
-                self.logger.debug(f"📤 Request data: {data}")
+                self.logger.debug(f"POST Request data: {data}")
 
             if method.upper() == 'GET':
                 response = requests.get(url, headers=headers)
