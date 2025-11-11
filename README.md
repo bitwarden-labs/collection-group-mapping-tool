@@ -10,6 +10,12 @@ This tool automates three core operations:
 - Creation of groups from CSV column headers
 - Assignment of collection permissions to groups based on CSV matrix values
 
+N.b. Existing Objects
+
+Collections are always created.  There is no de-duplication tool available for Collections.
+Groups will be created where an idenitically-named group does not already exist.  If a group already exists matching the name on the input file, then this existing group will be used.
+
+
 The tool processes a CSV file whereby:
 
 - The first column (`Path`) defines nested collection structures (e.g., `Business Unit/A1/alpha`)
@@ -73,10 +79,23 @@ Business Unit/A1/alpha,Edit,Edit,Manage
 - **Other columns**: Group names (headers become group names) <https://bitwarden.com/help/about-groups/>
 - **Cell values**: Permission levels
   - `None` - No access
+  - `ReadPWsHidden` - View-only access, but secret fields are only available via auto-fill
   - `Read` - View-only access
+  - `EditPWsHidden` - Edit access, but secret fields are only available via auto-fill
   - `Edit` - View and edit access
   - `Manage` - Full management access
 <https://bitwarden.com/help/collection-permissions/#permissions-table>
+
+### 4. Launch the tool
+
+When you are ready to run the tool, you can do so by installing a valid Python environment, along with necessary dependencies, and running:
+
+```bash
+python -m src
+```
+
+from the working directory.
+
 
 ### Workflow Steps
 
