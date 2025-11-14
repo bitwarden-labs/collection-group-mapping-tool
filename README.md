@@ -20,7 +20,7 @@ The tool processes a CSV file whereby:
 
 - The first column (`Path`) defines nested collection structures (e.g., `Business Unit/A1/alpha`)
 - The column headers define group names (e.g., `Users`, `Seniors`, `Admins`)
-- The cell values define permissions (`None`, `Read`, `Edit`, `Manage`)
+- The cell values define permissions (`None`, `Read`, `Edit`, `Manage`, `ReadPWsHidden`, `EditPWsHidden`)
 
 ## Installation
 
