@@ -15,7 +15,6 @@ N.b. Existing Objects
 Collections are always created.  There is no de-duplication tool available for Collections.
 Groups will be created where an idenitically-named group does not already exist.  If a group already exists matching the name on the input file, then this existing group will be used.
 
-
 The tool processes a CSV file whereby:
 
 - The first column (`Path`) defines nested collection structures (e.g., `Business Unit/A1/alpha`)
@@ -106,7 +105,6 @@ python -m src
 ```
 
 from the working directory.
-
 
 ### Workflow Steps
 
