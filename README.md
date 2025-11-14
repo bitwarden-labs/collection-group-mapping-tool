@@ -45,20 +45,25 @@ cp .env.example .env
 Edit `.env` with your Bitwarden credentials:
 
 ```env
-# Bitwarden CLI Authentication
+# Bitwarden credentials and secrets
+# Organisation credentials
+# See https://bitwarden.com/help/public-api/
+BW_ORGCLIENTID=your_api_client_id_here
+BW_ORGID=organisation_id
+BW_ORGCLIENTSECRET=your_organisation_api_secret_here
+
+# User account credentials
 BW_USERNAME=your_account_username_here
 BW_MASTERPASSWORD=your_master_password_here
 # https://bitwarden.com/help/cli/#using-an-api-key
 BW_USERCLIENTID=your_client_api_id_here
 BW_USERCLIENTSECRET=your_account_api_secret_here
 
-# Bitwarden API Authentication (for groups/permissions)
-# See https://bitwarden.com/help/public-api/
-BW_ORGCLIENTID=your_api_client_id_here
-BW_ORGCLIENTSECRET=your_organisation_api_secret_here
+# Optional: Custom Bitwarden server URLs (defaults to bitwarden.com if not specified)
+# BW_SERVER_URL = https://vault.bitwarden.com/
+# BW_API_URL = https://api.bitwarden.com
+# BW_IDENTITY_URL = https://identity.bitwarden.com/connect/token
 
-# Organization ID
-BW_ORGID=organisation_id
 ```
 
 ### 3. Prepare Input CSV
