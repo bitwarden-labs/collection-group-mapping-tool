@@ -73,6 +73,10 @@ Business Unit/A1,Edit,Edit,Manage
 Business Unit/A1/alpha,Edit,Edit,Manage
 ```
 
+Simply add as many Groups and Collections as necessary, ensuring that each Group/Collection intersection contains a desired permission mapping, even if that is 'None'
+
+It is recommended that Groups are *not* created using this tool, but intead groups synched via the IdP are identified and used.  However, for ease of use, if a Group is defined that does not already exist in the Organisation, it will be created.
+
 **CSV Format:**
 
 - **First column (`Path`)**: Collection names.  Nested collections are demarcated with the `/` character (<https://bitwarden.com/help/about-collections/#nested-collections>)
@@ -86,7 +90,14 @@ Business Unit/A1/alpha,Edit,Edit,Manage
   - `Manage` - Full management access
 <https://bitwarden.com/help/collection-permissions/#permissions-table>
 
-### 4. Launch the tool
+### 4. Prepare preqrequisites
+
+  - Ensure that `bw` is in your path
+    - ```bw help``` - should return the bw commands
+  - (Recommended) - setup a Python venv, potentially using pipenv
+  - Install prerequisites (from requirements.txt or using pipenv - see [Python Instructions](README-Python-installation.md) documentation)
+
+### 5. Launch the tool
 
 When you are ready to run the tool, you can do so by installing a valid Python environment, along with necessary dependencies, and running:
 
@@ -150,6 +161,8 @@ Verify:
 
 ### Running Individual Steps
 
+Several of the modules have self-test functions, which can be run individually for debug purposes, e.g.:
+
 ```bash
 # Run only collections creation
 pipenv run python src/execute_collection_creation.py
@@ -163,8 +176,7 @@ pipenv run python src/bitwarden_permissions.py
 
 ## Security Notes
 
-- **Never commit `.env`** to version control (already in `.gitignore`)
-- API credentials have full organization access - protect this carefully
+- **Never commit `.env`** to version control, as this the org API credentials
 
 ## Version Information
 
