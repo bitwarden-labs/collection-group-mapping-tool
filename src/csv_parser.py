@@ -25,9 +25,10 @@ class CollectionPermissionParser:
                 collection_path = row['Path']
                 self.collections.append(collection_path)
 
-                # Store permissions for this collection
+                # Store permissions for this collection; treat blank/whitespace cells as "None"
                 self.permissions[collection_path] = {
-                    group: row[group] for group in self.groups
+                    group: (row[group].strip() if row[group] and row[group].strip() else "None")
+                    for group in self.groups
                 }
 
         return {
