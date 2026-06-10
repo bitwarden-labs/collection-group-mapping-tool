@@ -280,13 +280,15 @@ class BitwardenPermissionsManager:
             self.logger.logger.error(f" Missing collection IDs for: {missing_collections}")
             valid = False
 
-        # Check for missing group IDs
-        all_groups = set()
+        # Check for missing group IDs for groups that have at least one non-"None" permission assignment in the matrix.
+        assigned_groups = set()
         for group_perms in self.permission_matrix.values():
-            all_groups.update(group_perms.keys())
+            for group_name, permission in group_perms.items():
+                if permission and permission != "None":
+                    assigned_groups.add(group_name)
 
         missing_groups = []
-        for group_name in all_groups:
+        for group_name in assigned_groups:
             if group_name not in self.group_ids:
                 missing_groups.append(group_name)
 
@@ -328,11 +330,16 @@ class BitwardenPermissionsManager:
             failed = 0
 
             for group_name, group_id in self.group_ids.items():
-                # Skip groups that aren't in our CSV (like existing groups)
-                has_permissions = any(group_name in group_perms for group_perms in self.permission_matrix.values())
+                # Skip groups with no real assignment in the CSV. A header-only group
+                # (all cells "None") would otherwise get a PUT with collections=[],
+                # wiping any existing collection access.
+                has_permissions = any(
+                    group_perms.get(group_name) and group_perms.get(group_name) != "None"
+                    for group_perms in self.permission_matrix.values()
+                )
 
                 if not has_permissions:
-                    self.logger.logger.info(f"  Skipping group '{group_name}' (not in CSV)")
+                    self.logger.logger.info(f"  Skipping group '{group_name}' (no assignments in CSV)")
                     continue
 
                 success = self.assign_permissions_to_group(group_name, group_id)
