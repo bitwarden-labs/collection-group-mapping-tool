@@ -92,6 +92,8 @@ class BitwardenAuth:
             )
 
             self.session_key = result.stdout.strip()
+            # Export BW_SESSION as env_var
+            os.environ["BW_SESSION"] = self.session_key
             logger.info("Vault unlocked successfully")
             return self.session_key
 
@@ -119,10 +121,8 @@ class BitwardenAuth:
         return session_key
 
     def run_command(self, command_args, use_session=True, input_data=None):
-        """Run a Bitwarden CLI command with proper session handling."""
-        if use_session and self.session_key:
-            command_args.extend(["--session", self.session_key])
-
+        """Run a Bitwarden CLI command. Session key supplied via BW_SESSION
+        env_var (set in unlock())"""
         try:
             result = subprocess.run(
                 [self.bw_cmd] + command_args,
