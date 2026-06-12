@@ -142,6 +142,21 @@ class BulkLogger:
         self.logger.info(f" Collection created: '{collection_path}' → ID: {collection_id}")
         self._save_log()
 
+    def log_collection_existing(self, collection_path: str, collection_id: str,
+                                organization_id: str) -> None:
+        """Log a pre-existing collection that was reused (skipped during creation)."""
+        log_entry = CollectionLog(
+            timestamp=datetime.now().isoformat(),
+            collection_path=collection_path,
+            collection_id=collection_id,
+            organization_id=organization_id,
+            status="existing"
+        )
+
+        self.log_data["collections"].append(asdict(log_entry))
+        self.logger.info(f" Collection existing (skipped): '{collection_path}' → ID: {collection_id}")
+        self._save_log()
+
     def log_collection_failed(self, collection_path: str, organization_id: str,
                             error_message: str) -> None:
         """Log failed collection creation."""

@@ -46,18 +46,35 @@ def main():
         print("\n4. Initialising collection manager...")
         collection_manager = BitwardenCollectionManager(auth, logger)
 
-        # Step 5: Create collections
-        print("\n5. Creating collections in Bitwarden...")
+        # Step 5: Look up existing collections so we can skip duplicates.
+        print("\n5. Looking up existing collections for de-duplication...")
+        existing_collections = collection_manager.list_existing_collections()
+        print(f"   ✓ Found {len(existing_collections)} existing collections in org")
+
+        # Step 6: Create collections (skipping any whose name already exists)
+        print("\n6. Creating collections in Bitwarden...")
         print("-" * 40)
 
         # Sort to ensure parent collections are created first
         sorted_collections = sorted(unique_collections, key=lambda x: (x.count('/'), x))
 
         created_count = 0
+        existing_count = 0
         failed_count = 0
 
         for collection_path in sorted_collections:
             collection_name = collection_path.split('/')[-1]
+
+            if collection_path in existing_collections:
+                existing_id = existing_collections[collection_path]
+                print(f"Skipping (already exists): '{collection_path}' → ID: {existing_id}")
+                logger.log_collection_existing(
+                    collection_path=collection_path,
+                    collection_id=existing_id,
+                    organization_id=auth.organization_id
+                )
+                existing_count += 1
+                continue
 
             try:
                 print(f"Creating: '{collection_path}' (leaf name: {collection_name})")
@@ -69,21 +86,23 @@ def main():
                 print(f"    Failed: {e}")
                 failed_count += 1
 
-        # Step 6: Finalise logging
-        print(f"\n6. Finalising operation logs...")
+        # Step 7: Finalise logging
+        print(f"\n7. Finalising operation logs...")
+        attempted = created_count + failed_count
         logger.finalise_operation(
             operation_type="Collection Creation",
-            total_attempted=len(sorted_collections),
+            total_attempted=attempted,
             total_succeeded=created_count,
-            csv_source_file=csv_file
+            csv_source_file=csv_file,
+            total_skipped=existing_count
         )
 
         if created_count > 0:
             print(f"\n Collections created at:")
             print(f"   {auth.server_url}#/organizations/{auth.organization_id}/collections")
 
-        # Step 7: List created collections for verification
-        print(f"\n7. Listing current collections for verification...")
+        # Step 8: List collections in org for verification
+        print(f"\n8. Listing current collections for verification...")
         try:
             collections_result = auth.run_command([
                 "list", "org-collections",

@@ -85,9 +85,11 @@ class BitwardenPermissionsManager:
             with open(latest_log, 'r') as f:
                 log_data = json.load(f)
 
-            # Extract collection mappings
+            # Extract collection mappings. "existing" entries are logged to avoid duplication:
+            # collections may be already in the org and can be reused.
+            # These still get permissions assigned.
             for entry in log_data.get("collections", []):
-                if entry.get("status") == "created":
+                if entry.get("status") in ("created", "existing"):
                     collection_path = entry["collection_path"]
                     collection_id = entry["collection_id"]
                     self.collection_ids[collection_path] = collection_id
