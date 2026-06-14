@@ -6,6 +6,7 @@ Handles OAuth2 client credentials authentication for the Bitwarden Public API.
 """
 
 import os
+import time
 import requests
 import datetime
 import logging
@@ -34,6 +35,10 @@ class BitwardenAPIAuth:
 
         self.bearer_token: Optional[str] = None
         self.bearer_timeout: Optional[datetime.datetime] = None
+
+        # Preventative throttle: timestamp (monotonic seconds) of the last request.
+        # Used to space requests out under the API's 5 req/s limit.
+        self._last_request_monotonic: float = 0.0
 
         self._setup_logging(log_dir)
         self._validate_credentials()
@@ -162,9 +167,43 @@ class BitwardenAPIAuth:
             "Content-Type": "application/json"
         }
 
+    # Backoff schedule (seconds) for transient server errors. Length defines max retries.
+    _RETRY_BACKOFFS_SECONDS = (1, 4, 10)
+    # Rate-limit backoff: API responds with "Try again in 1m." — a flat 60s matches
+    # what the server asks for. Used when a 429 sneaks through despite the throttle.
+    _RATE_LIMIT_BACKOFF_SECONDS = 60
+    # Preventative pacing: Bitwarden's public API allows 5 req/s. 0.25s between
+    # requests = 4 req/s, well under the limit with a small safety margin.
+    _MIN_REQUEST_INTERVAL_SECONDS = 0.25
+
+    @staticmethod
+    def _parse_retry_after(response: "requests.Response", default: int) -> int:
+        """Return the Retry-After header value in seconds, or `default` if missing/non-numeric."""
+        header = response.headers.get("Retry-After")
+        if header:
+            try:
+                return max(1, int(header))
+            except ValueError:
+                pass  # HTTP-date form not supported here — fall back to default
+        return default
+
+    def _throttle(self) -> None:
+        """Sleep just long enough that the next request stays under the rate limit."""
+        elapsed = time.monotonic() - self._last_request_monotonic
+        wait = self._MIN_REQUEST_INTERVAL_SECONDS - elapsed
+        if wait > 0:
+            time.sleep(wait)
+        self._last_request_monotonic = time.monotonic()
+
     def make_api_request(self, method: str, endpoint: str, data: dict = None) -> requests.Response:
         """
-        Make an authenticated request to the Bitwarden API.
+        Make an authenticated request to the Bitwarden API, with throttling + retry.
+
+        Pacing: every request is preceded by `_throttle()`, which spaces calls out
+        to stay under the API's 5 req/s ceiling. Retry: HTTP 5xx and network errors
+        use the short backoff schedule; HTTP 429 (rate limit) uses a flat 60s wait
+        (or Retry-After if the server provides one). 4xx other than 429 are not
+        retried — those are deterministic client problems.
 
         Args:
             method: HTTP method (GET, POST, PUT, DELETE)
@@ -175,33 +214,88 @@ class BitwardenAPIAuth:
             Response object
         """
         url = f"{self.api_url}{endpoint}"
-        headers = self.get_auth_headers()
+        method_upper = method.upper()
+        if method_upper not in ('GET', 'POST', 'PUT', 'DELETE'):
+            raise ValueError(f"Unsupported HTTP method: {method}")
 
-        try:
-            self.logger.info(f" API Request: {method.upper()} {url}")
-            if data:
-                self.logger.debug(f"POST Request data: {data}")
+        max_attempts = len(self._RETRY_BACKOFFS_SECONDS) + 1
 
-            if method.upper() == 'GET':
-                response = requests.get(url, headers=headers)
-            elif method.upper() == 'POST':
-                response = requests.post(url, headers=headers, json=data)
-            elif method.upper() == 'PUT':
-                response = requests.put(url, headers=headers, json=data)
-            elif method.upper() == 'DELETE':
-                response = requests.delete(url, headers=headers)
+        for attempt in range(max_attempts):
+            # Refresh token each attempt — covers the edge case of expiry mid-retry.
+            headers = self.get_auth_headers()
+
+            attempt_label = (
+                "API Request" if attempt == 0
+                else f"API Request (retry {attempt}/{len(self._RETRY_BACKOFFS_SECONDS)})"
+            )
+            self.logger.info(f" {attempt_label}: {method_upper} {url}")
+            if data and attempt == 0:
+                self.logger.debug(f"Request data: {data}")
+
+            self._throttle()
+
+            try:
+                response = requests.request(
+                    method_upper, url, headers=headers,
+                    json=data if data is not None else None,
+                )
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                if attempt < max_attempts - 1:
+                    delay = self._RETRY_BACKOFFS_SECONDS[attempt]
+                    self.logger.warning(
+                        f" Network error on attempt {attempt + 1}: {e}; retrying in {delay}s"
+                    )
+                    time.sleep(delay)
+                    continue
+                self.logger.error(
+                    f" API request failed after {attempt + 1} attempts: "
+                    f"{method_upper} {url} - {e}"
+                )
+                raise
+
+            # Rate limit (429): pace ourselves out then retry. Should rarely trigger
+            # now that we throttle preemptively, but we keep this as a safety net.
+            if response.status_code == 429 and attempt < max_attempts - 1:
+                delay = self._parse_retry_after(response, default=self._RATE_LIMIT_BACKOFF_SECONDS)
+                self.logger.warning(
+                    f" Rate limited (429) on attempt {attempt + 1}: "
+                    f"{response.text[:300]}; retrying in {delay}s"
+                )
+                time.sleep(delay)
+                continue
+
+            # Retry on server-side errors (5xx). Other 4xx falls through to raise_for_status.
+            if 500 <= response.status_code < 600 and attempt < max_attempts - 1:
+                delay = self._RETRY_BACKOFFS_SECONDS[attempt]
+                self.logger.warning(
+                    f" Server error {response.status_code} on attempt {attempt + 1}: "
+                    f"{response.text[:300]}; retrying in {delay}s"
+                )
+                time.sleep(delay)
+                continue
+
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                self.logger.error(
+                    f" API request failed after {attempt + 1} attempts: "
+                    f"{method_upper} {url} - {e}"
+                )
+                if response.text:
+                    self.logger.error(f" Response: {response.text}")
+                raise
+
+            if attempt > 0:
+                self.logger.info(
+                    f" API Request succeeded after {attempt} retry"
+                    f"{'s' if attempt > 1 else ''}: {response.status_code}"
+                )
             else:
-                raise ValueError(f"Unsupported HTTP method: {method}")
-
-            response.raise_for_status()
-            self.logger.info(f" API Request successful: {response.status_code}")
+                self.logger.info(f" API Request successful: {response.status_code}")
             return response
 
-        except requests.exceptions.RequestException as e:
-            self.logger.error(f" API request failed: {method} {url} - {e}")
-            if hasattr(e, 'response') and e.response is not None:
-                self.logger.error(f" Response: {e.response.text}")
-            raise
+        # Loop exited without returning or raising — guard against silent bugs.
+        raise RuntimeError("make_api_request retry loop exited unexpectedly")
 
 
 def test_auth():
